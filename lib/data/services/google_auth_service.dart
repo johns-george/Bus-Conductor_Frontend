@@ -5,6 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/config/api_config.dart';
+
 
 class GoogleAuthService {
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -94,7 +96,7 @@ class GoogleAuthService {
   static Future<Map<String, dynamic>> _exchangeTokenWithBackend(String idToken) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/auth/google'),
+        Uri.parse('${ApiConfig.baseUrl}/auth/google'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'id_token': idToken,
