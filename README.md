@@ -1,48 +1,54 @@
-# Bus Conductor
+# BusMate (Bus Conductor) — Flutter App
 
-Premium Flutter bus ticketing app frontend. Fully mocked end-to-end flows, ready for backend integration.
+Flutter client for **BusMate**, a smart transit ticketing system. Passengers search routes, book and pay for tickets and show a QR code; conductors scan tickets; admins manage the system.
 
-## Getting started
+- **Live app:** https://bus-conductor.netlify.app/
+- **Backend repo (FastAPI):** https://github.com/johns-george/Bus-Conductor_Backend
 
-1. Install Flutter (>= 3.19).
-2. From the project root:
-   ```bash
-   flutter create .        # generate platform folders (android/ios/web) on first run
-   flutter pub get
-   flutter run
-   ```
+## Features
+
+- Onboarding, sign-up/login, Google sign-in, OTP and forgot/reset password
+- Route search and results, route and bus details
+- Booking stepper: passenger details, payment, ticket
+- **QR tickets** for passengers and a **conductor scanner** to validate them
+- Wallet, payment methods and transaction history
+- Notifications, help and admin screens
 
 ## Architecture
 
+Clean layering with a repository interface per feature, so the data source can be swapped (live API or in-memory mocks):
+
 ```
 lib/
-├── main.dart              app bootstrap
-├── app.dart               MaterialApp + router wiring
-├── core/
-│   ├── theme/             colors, typography, spacing, theme
-│   ├── router/            go_router config
-│   ├── constants/
-│   └── utils/
-├── domain/
-│   ├── entities/          strongly typed models
-│   └── repositories/      pure interfaces (backend-agnostic)
-├── data/
-│   ├── mock/              seeded demo data
-│   └── repositories/      mock implementations of domain interfaces
-└── presentation/
-    ├── providers/         Riverpod providers
-    ├── widgets/           reusable design-system widgets
-    └── features/          feature screens (splash, onboarding, search, results, ...)
+├── core/            theme, router (go_router), API client and config, utils
+├── domain/          entities and repository interfaces
+├── data/            API repositories (HTTP) and Google auth service
+└── presentation/    feature screens, Riverpod controllers, shared widgets
 ```
 
-State: `flutter_riverpod`. Navigation: `go_router`.
+State management: `flutter_riverpod` · Navigation: `go_router` · QR: `qr_flutter` · Auth: `google_sign_in`
 
-## Phase status
+## Run locally
 
-- [x] Phase 1 — architecture, design system, splash, onboarding, search, route results
-- [ ] Phase 2 — route details, auth flows, main shell navigation
-- [ ] Phase 3 — booking, payment, tickets, QR, transactions, profile
+Requires Flutter >= 3.19 and the [backend](https://github.com/johns-george/Bus-Conductor_Backend) running.
 
-## Backend integration
+```bash
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://localhost:8000
+```
 
-All repositories are pure interfaces in `lib/domain/repositories/` with mock implementations in `lib/data/repositories/`. To plug in a real backend, implement the interfaces against your HTTP client and swap the providers in `lib/presentation/providers/repository_providers.dart`. Search for `// TODO(api):` markers across the codebase for integration points.
+Useful flags:
+
+| Flag | Purpose |
+|---|---|
+| `--dart-define=API_BASE_URL=<url>` | Backend URL (Android emulator: `http://10.0.2.2:8000`) |
+| `--dart-define=USE_MOCKS=true` | Use in-memory mock repositories, no backend needed |
+| `--dart-define=GOOGLE_CLIENT_ID=<id>` | Google OAuth web client ID |
+
+## Web deployment
+
+`vercel.json` builds the web app with `flutter build web --release`; the current production deployment is on Netlify.
+
+## Author
+
+Johns George (partner project; Flutter frontend by a teammate) · [LinkedIn](https://www.linkedin.com/in/johns-george-3568b8233/) · [GitHub](https://github.com/johns-george)
